@@ -47,31 +47,50 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- STYLES FOR STRUCTURED EXPLANATION --- */
         .explanation-item {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem; /* 8px */
-            padding: 1rem; /* 16px */
-            margin-bottom: 1rem; /* 16px */
+            gap: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
             border-left: 3px solid #4f46e5;
             background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 0.5rem; /* 8px */
+            border-radius: 0.5rem;
         }
         .code-line {
             font-family: 'Fira Code', monospace;
-            background-color: #111827; /* Darker background for code */
-            padding: 0.75rem; /* 12px */
-            border-radius: 0.375rem; /* 6px */
-            color: #a5b4fc; /* Indigo-300 for code text */
-            white-space: pre-wrap; /* Handle long lines of code */
+            background-color: #111827;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            color: #a5b4fc;
+            white-space: pre-wrap;
             word-break: break-all;
-            font-size: 0.875rem; /* 14px */
+            font-size: 0.875rem;
         }
         .explanation-text {
-            color: #d1d5db; /* Gray-300 for explanation text */
-            padding-left: 0.25rem; /* 4px */
-            font-size: 0.95rem; /* ~15px */
+            color: #d1d5db;
+            padding-left: 0.25rem;
+            font-size: 0.95rem;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background-color: rgba(31, 41, 55, 0.7);
+            color: #9ca3af;
+            border: 1px solid #4b5563;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background-color: #4b5563;
+            color: #e5e7eb;
         }
     </style>
 </head>
@@ -80,7 +99,7 @@
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-white">AI Code Translator & Explainer</h1>
-          
+            <p class="text-gray-400 mt-2">Translate code between languages and get line-by-line explanations, powered by Gemini.</p>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -92,7 +111,13 @@
                         <option>JavaScript</option><option>Python</option><option>Java</option><option>C++</option><option>Go</option><option>Rust</option><option>TypeScript</option><option>PHP</option>
                     </select>
                 </div>
-                <textarea id="source-code" class="fira-code w-full h-80 bg-gray-900/80 border border-gray-700 rounded-lg p-4 text-sm resize-none focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Paste your code here..."></textarea>
+                <div class="relative w-full h-80">
+                    <textarea id="source-code" class="fira-code w-full h-full bg-gray-900/80 border border-gray-700 rounded-lg p-4 text-sm resize-none focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Paste your code here..."></textarea>
+                    <button id="copy-source-btn" class="copy-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Output Panel -->
@@ -105,12 +130,15 @@
                 </div>
                 <div class="relative w-full h-80">
                     <textarea id="translated-code" readonly class="fira-code w-full h-full bg-gray-900/80 border border-gray-700 rounded-lg p-4 text-sm resize-none"></textarea>
+                    <button id="copy-translated-btn" class="copy-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                    </button>
                     <div id="output-loader" class="absolute inset-0 bg-gray-900/50 flex justify-center items-center rounded-lg hidden"><div class="spinner"></div></div>
                 </div>
             </div>
         </main>
 
-        <!-- Action Buttons -->
         <div class="flex justify-center items-center gap-4 my-6">
             <button id="translate-btn" class="btn-primary font-semibold text-white px-8 py-3 rounded-lg flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
@@ -122,7 +150,6 @@
             </button>
         </div>
         
-        <!-- Explanation Section -->
         <div id="explanation-container" class="glass-panel p-6 rounded-2xl mt-8 hidden">
              <h2 class="text-2xl font-semibold text-white mb-4 text-center">Code Explanation</h2>
              <div id="explanation-content" class="text-gray-300"></div>
@@ -142,6 +169,8 @@
             const explanationContent = document.getElementById('explanation-content');
             const outputLoader = document.getElementById('output-loader');
             const explanationLoader = document.getElementById('explanation-loader');
+            const copySourceBtn = document.getElementById('copy-source-btn');
+            const copyTranslatedBtn = document.getElementById('copy-translated-btn');
 
             const API_URL = new URL('/api/generate', window.location.origin).toString();
             
@@ -153,25 +182,18 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ prompt: prompt, task: task })
                     });
-
                     const contentType = response.headers.get("content-type");
                     if (!response.ok || !contentType || !contentType.includes("application/json")) {
                         const textError = await response.text();
                         console.error("Server Error Response:", textError);
                         throw new Error("Server returned an invalid response. This often means the backend function has an error.");
                     }
-
                     const result = await response.json();
-                    if (result.error) {
-                         throw new Error(result.error);
-                    }
+                    if (result.error) { throw new Error(result.error); }
                     return result.result;
-
                 } catch (error) {
                     console.error(`API call failed:`, error);
-                    if (error instanceof SyntaxError) {
-                        return "Error: Failed to parse server response. The backend is likely misconfigured or down.";
-                    }
+                    if (error instanceof SyntaxError) { return "Error: Failed to parse server response. The backend is likely misconfigured or down."; }
                     return `Error: ${error.message}`;
                 } finally {
                     loader.classList.add('hidden');
@@ -182,22 +204,16 @@
                 const sourceCode = sourceCodeEl.value.trim();
                 const sourceLang = sourceLangEl.value;
                 const targetLang = targetLangEl.value;
-
                 if (!sourceCode) {
                     translatedCodeEl.value = "Please enter some code to translate.";
                     return;
                 }
-
                 translatedCodeEl.value = '';
                 explanationContainer.classList.add('hidden');
                 explainBtn.classList.add('hidden');
-
                 const translatePrompt = `Translate the following ${sourceLang} code to ${targetLang}:\n\n${sourceCode}`;
-                
                 const translatedCode = await callBackendAPI(translatePrompt, 'translate', outputLoader);
-                
                 translatedCodeEl.value = translatedCode;
-
                 if (!translatedCode.startsWith("Error:")) {
                     explainBtn.classList.remove('hidden');
                 }
@@ -206,23 +222,49 @@
             explainBtn.addEventListener('click', async () => {
                 const translatedCode = translatedCodeEl.value.trim();
                 const targetLang = targetLangEl.value;
-
                 if (!translatedCode || translatedCode.startsWith("Error:")) {
                     explanationContent.innerHTML = "<p>There is no valid code to explain.</p>";
                     explanationContainer.classList.remove('hidden');
                     return;
                 }
-                
                 explanationContainer.classList.remove('hidden');
                 explanationContent.innerHTML = '';
-
                 const explainPrompt = `Here is the ${targetLang} code to explain:\n\n${translatedCode}`;
-                
                 const explanation = await callBackendAPI(explainPrompt, 'explain', explanationLoader);
-
                 explanationContent.innerHTML = explanation;
             });
+
+            function setupCopyButton(button, textarea) {
+                const buttonSpan = button.querySelector('span');
+                button.addEventListener('click', () => {
+                    const textToCopy = textarea.value;
+                    if (!textToCopy) return;
+
+                    const tempTextarea = document.createElement('textarea');
+                    tempTextarea.value = textToCopy;
+                    document.body.appendChild(tempTextarea);
+                    tempTextarea.select();
+                    try {
+                        document.execCommand('copy');
+                        buttonSpan.textContent = 'Copied!';
+                        setTimeout(() => {
+                            buttonSpan.textContent = 'Copy';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Fallback copy failed', err);
+                        buttonSpan.textContent = 'Failed!';
+                         setTimeout(() => {
+                            buttonSpan.textContent = 'Copy';
+                        }, 2000);
+                    }
+                    document.body.removeChild(tempTextarea);
+                });
+            }
+
+            setupCopyButton(copySourceBtn, sourceCodeEl);
+            setupCopyButton(copyTranslatedBtn, translatedCodeEl);
         });
     </script>
 </body>
 </html>
+
