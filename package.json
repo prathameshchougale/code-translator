@@ -1,0 +1,15 @@
+{
+  "name": "code-translator-secure",
+  "version": "1.0.0",
+  "description": "A secure code translator using Vercel Serverless Functions and Gemini API.",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.14.1"
+  },
+  "devDependencies": {
+    "serve": "^14.2.3"
+  }
+}
